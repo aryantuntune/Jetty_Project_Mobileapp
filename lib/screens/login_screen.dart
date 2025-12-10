@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
+import '../services/google_auth_service.dart';
 import '../utils/validators.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_textfield.dart';
@@ -207,17 +208,28 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(12),
                             onTap: () async {
                               setState(() => _isLoading = true);
-                              // Simulate Google Sign In (will implement real Google Auth later)
-                              await Future.delayed(const Duration(seconds: 1));
+
+                              final response = await GoogleAuthService.signInWithGoogle();
+
                               setState(() => _isLoading = false);
 
                               if (!mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Google Sign-In will be available soon!'),
-                                  backgroundColor: AppColors.primary,
-                                ),
-                              );
+
+                              if (response.success) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(response.message),
+                                    backgroundColor: AppColors.error,
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                );
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
