@@ -82,7 +82,7 @@ class BookingService {
     required List<Map<String, dynamic>> items,
   }) async {
     if (AppConfig.useMockData) {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 500));
 
       double totalAmount = 0;
       final itemRates = MockDataService.getMockItemRates();
